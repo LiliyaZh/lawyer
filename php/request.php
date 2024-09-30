@@ -46,6 +46,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['updaterequest'])) {
     }
 }
 
+// Запрос истории обработки заявки
+$stmt = $pdo->prepare('
+    SELECT rh.date_time_of_history, rs.name_of_status
+    FROM history_of_requests rh
+    JOIN statuses_of_requests rs ON rh.key_of_status = rs.key_of_status
+    WHERE rh.key_of_request = :key_of_request
+    ORDER BY rh.date_time_of_history ASC
+');
+$stmt->execute(['key_of_request' => $reqId]);
+$history = $stmt->fetchAll();
+
 
 ?>
 
