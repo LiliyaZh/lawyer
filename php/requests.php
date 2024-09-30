@@ -67,6 +67,30 @@ $filters = [
 
 $requests = fetchRequests($pdo, $filters);
 
+if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment;filename=requests.csv');
+
+    $output = fopen('php://output', 'w');
+    fputcsv($output, ['Дата и время', 'Тип заявки', 'Статус заявки', 'Имя клиента', 'Фамилия клиента', 'Телефон клиента', 'Имя сотрудника', 'Фамилия сотрудника', 'Телефон сотрудника']);
+
+    foreach ($requests as $request) {
+        fputcsv($output, [
+            $request['date_time_of_request'],
+            $request['name_of_type'],
+            $request['name_of_status'],
+            $request['name_of_client'],
+            $request['surname_of_client'],
+            $request['telephone_of_client'],
+            $request['name_of_worker'],
+            $request['surname_of_worker'],
+            $request['telephone_of_worker']
+        ]);
+    }
+
+    fclose($output);
+    exit;
+}
 ?>
 
 
