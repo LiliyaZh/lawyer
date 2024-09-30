@@ -23,6 +23,30 @@ $types = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 $sql = "SELECT * FROM workers_in_company WHERE type_of_worker = 3";
 $workers_in_company = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
+// Обработка формы
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['updaterequest'])) {
+    $reqTypeId = intval($_POST['key_of_type']);
+    $reqStatusId = intval($_POST['key_of_status']);
+    $employerId = intval($_POST['key_of_worker']);
+
+    // Обновление заявки
+    $sql = "UPDATE requests_of_clients SET key_of_type = ?, key_of_status = ?, key_of_worker = ? WHERE key_of_request = ?";
+    $stmt = $pdo->prepare($sql);
+    if ($stmt->execute([$reqTypeId, $reqStatusId, $employerId, $reqId])) {
+        if ($request['key_of_status'] != $reqStatusId) {
+            // Добавление записи в историю заявки
+            $sql = "INSERT INTO history_of_requests (key_of_status, key_of_request) VALUES (?, ?)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$reqStatusId, $reqId]);
+        }
+
+        echo "<div class='alert alert-success text-center'>Параметры заявки успешно обновлены.</div>";
+    } else {
+        echo "<div class='alert alert-danger text-center'>Ошибка при обновлении параметров заявки: " . $stmt->errorInfo()[2] . "</div>";
+    }
+}
+
+
 ?>
 
 <h2 class="text-center mb-4">Управление заявкой на оказание бесплатной юридической помощи</h2>
