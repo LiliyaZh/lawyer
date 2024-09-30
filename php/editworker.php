@@ -1,3 +1,42 @@
+<?php
+require_once('db.php');
+
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 'employee' || $_SESSION['empl_type'] != 1) {
+    header('Location: home');
+    exit;
+}
+
+// Получение данных сотрудника по ID
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    $sql = "SELECT * FROM workers_in_company WHERE key_of_worker = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$id]);
+    $worker = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+// Обновление данных сотрудника
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = $_POST['id'];
+    $name = $_POST['name'];
+    $surname = $_POST['surname'];
+    $info = $_POST['info'];
+    $telephone = $_POST['telephone'];
+    $email = $_POST['email'];
+    $type = $_POST['type'];
+
+    $sql = "UPDATE workers_in_company 
+            SET name_of_worker = ?, surname_of_worker = ?, information_of_worker = ?, telephone_of_worker = ?, email_of_worker = ?, type_of_worker = ?
+            WHERE key_of_worker = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$name, $surname, $info, $telephone, $email, $type, $id]);
+
+    // Перенаправление на страницу сотрудников
+    header('Location: workers.php');
+    exit();
+}
+?>
+
 <h2 class="mb-4 text-center">Редактировать данные сотрудника</h2>
 <?php if (isset($worker)): ?>
     <form action="edit_worker.php?id=<?= $worker['key_of_worker'] ?>" method="post">
