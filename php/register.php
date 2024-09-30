@@ -46,7 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<div class="alert alert-info text-center mt-3 mb-3">Ваш аккаунт был успешно удален</div>
+<?php if (isset($_GET['p']) && $_GET['p'] == "d"): ?>
+    <div class="alert alert-info text-center mt-3 mb-3">Ваш аккаунт был успешно удален</div>
+<?php endif; ?>
+
 <h2>Зарегистрируйтесь, чтобы оставлять заявки на бесплатную юридическую помощь</h2>
 <?php if (!empty($errors)): ?>
     <div class="alert alert-danger">
