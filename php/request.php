@@ -57,6 +57,35 @@ $stmt = $pdo->prepare('
 $stmt->execute(['key_of_request' => $reqId]);
 $history = $stmt->fetchAll();
 
+// ЧАТ
+// Обработка отправки нового сообщения
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sendchat'])) {
+    $message = $_POST['message'] ?? '';
+    $key_of_client = $_SESSION['user_type'] === 'client' ? $_SESSION['user_id'] : null;
+    $key_of_worker = $_SESSION['user_type'] === 'employee' ? $_SESSION['user_id'] : null;
+    
+    if (!empty($message)) {
+        $stmt = $pdo->prepare('INSERT INTO messages_in_requests (text_of_message, key_of_client, key_of_worker, key_of_request) VALUES (:text_of_message, :key_of_client, :key_of_worker, :key_of_request)');
+        $stmt->execute(['text_of_message' => $message, 'key_of_client' => $key_of_client, 'key_of_worker' => $key_of_worker, 'key_of_request' => $key_of_request]);
+    }
+    
+    // Обработка загрузки файла
+    if (!empty($_FILES['file']['name'])) {
+        $name_of_file = $_FILES['file']['name'];
+        $file_tmp = $_FILES['file']['tmp_name'];
+        $size_of_file = $_FILES['file']['size'];
+        $server_name_of_file = uniqid() . '-' . $name_of_file;
+        
+        move_uploaded_file($file_tmp, 'uploads/' . $server_name_of_file);
+        
+        $stmt = $pdo->prepare('INSERT INTO files_of_requests (name_of_file, server_name_of_file, size_of_file, key_of_client, key_of_worker, key_of_request) VALUES (:name_of_file, :server_name_of_file, :size_of_file, :key_of_client, :key_of_worker, :key_of_request)');
+        $stmt->execute(['name_of_file' => $name_of_file, 'server_name_of_file' => $server_name_of_file, 'size_of_file' => $size_of_file, 'key_of_client' => $key_of_client, 'key_of_worker' => $key_of_worker, 'key_of_request' => $key_of_request]);
+    }
+    
+    header("Location: request?id=$reqId");
+    exit();
+}
+
 
 ?>
 
