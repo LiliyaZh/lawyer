@@ -1,3 +1,40 @@
+<?php
+require_once('db.php');
+
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 'employee' || $_SESSION['empl_type'] != 1) {
+    header('Location: home');
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        $pdo = new PDO($dsn, $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // Получение данных из формы
+        $name = $_POST['name'];
+        $surname = $_POST['surname'];
+        $info = $_POST['info'];
+        $telephone = $_POST['telephone'];
+        $email = $_POST['email'];
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        $type = $_POST['type'];
+
+        // SQL-запрос для вставки нового сотрудника
+        $sql = "INSERT INTO workers_in_company (name_of_worker, surname_of_worker, information_of_worker, telephone_of_worker, email_of_worker, password_of_worker, type_of_worker)
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$name, $surname, $info, $telephone, $email, $password, $type]);
+
+        // Перенаправление на страницу сотрудников
+        header('Location: workers');
+        exit();
+    } catch (PDOException $e) {
+        echo "Ошибка: " . $e->getMessage();
+    }
+}
+?>
+
 <h2 class="mb-4 text-center">Добавить сотрудника</h2>
 <form action="add_worker.php" method="post">
     <div class="mb-3">
