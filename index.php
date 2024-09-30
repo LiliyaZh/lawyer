@@ -15,4 +15,5 @@ function loadPage($page)
         require_once("php/404.php");
     }
 }
+
 ?>
