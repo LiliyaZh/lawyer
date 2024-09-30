@@ -1,3 +1,55 @@
+<h2 class="text-center mb-4">Управление заявкой на оказание бесплатной юридической помощи</h2>
+<form action="" method="POST">
+    <div class="mb-3">
+        <label for="problem" class="form-label">Вопрос/Проблемная ситуация гражданина</label>
+        <textarea class="form-control" readonly
+            id="problem"><?= $request['problem'] ? htmlspecialchars($request['problem']) : '' ?></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="key_of_type" class="form-label">Вид юридической услуги</label>
+        <select class="form-select" id="key_of_type" name="key_of_type" <?= $_SESSION['user_type'] == 'client' ? 'disabled' : 'required' ?> >
+            <option value="">Выбрать вид услуги</option>
+            <?php foreach ($types as $type): ?>
+                <option value="<?php echo htmlspecialchars($type['key_of_type']); ?>" <?php echo $type['key_of_type'] == $request['key_of_type'] ? 'selected' : ''; ?>>
+                    <?php echo htmlspecialchars($type['name_of_type']); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="key_of_status" class="form-label">Статус заявки</label>
+        <select class="form-select" id="key_of_status" name="key_of_status" <?= $_SESSION['user_type'] == 'client' ? 'disabled' : 'required' ?> >
+            <?php foreach ($statuses as $status): ?>
+                <option value="<?php echo htmlspecialchars($status['key_of_status']); ?>" <?php echo $status['key_of_status'] == $request['key_of_status'] ? 'selected' : ''; ?>>
+                    <?php echo htmlspecialchars($status['name_of_status']); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="key_of_worker" class="form-label">Ответственный юристконсульт</label>
+        <select class="form-select" id="key_of_worker" name="key_of_worker" <?= $_SESSION['user_type'] == 'client' ? 'disabled' : 'required' ?> >
+            <option value="">Выбрать ответственного юристконсульта</option>
+            <?php foreach ($workers_in_company as $employer): ?>
+                <option value="<?php echo htmlspecialchars($employer['key_of_worker']); ?>" <?php echo $employer['key_of_worker'] == $request['key_of_worker'] ? 'selected' : ''; ?>>
+                    <?php echo htmlspecialchars($employer['name_of_worker']) . ' ' . htmlspecialchars($employer['surname_of_worker']) . ' [' . htmlspecialchars($employer['telephone_of_worker']) . ']'; ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="comment_of_request" class="form-label">Комментарий юристконсульта по результатам работы с
+            гражданином</label>
+        <textarea class="form-control"
+            id="comment_of_request" <?= $_SESSION['user_type'] == 'client' ? 'readonly' : '' ?> ><?= $request['comment_of_request'] ? htmlspecialchars($request['comment_of_request']) : '' ?></textarea>
+    </div>
+    <?php if($_SESSION['user_type'] == 'employee') { ?> 
+        <div class="mt-5 mb-3">
+            <button type="submit" name="updaterequest" class="btn btn-primary">Обновить параметры заявки</button>
+        </div>
+    <?php } ?>
+</form>
+
 <h4 class="text-start mb-4 mt-5">История обработки заявки:</h4>
 <table class="table table-bordered">
     <thead>
