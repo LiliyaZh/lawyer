@@ -26,6 +26,35 @@ function fetchRequests($pdo, $filters)
         $query .= " AND cr.key_of_worker = :key_of_worker";
         $params[':key_of_worker'] = $_SESSION['user_id'];
     }
+    if (!empty($filters['key_of_status'])) {
+        $query .= " AND cr.key_of_status = :key_of_status";
+        $params[':key_of_status'] = $filters['key_of_status'];
+    }
+    if (!empty($filters['key_of_type'])) {
+        $query .= " AND cr.key_of_type = :key_of_type";
+        $params[':key_of_type'] = $filters['key_of_type'];
+    }
+    if (!empty($filters['key_of_client'])) {
+        $query .= " AND cr.key_of_client = :key_of_client";
+        $params[':key_of_client'] = $filters['key_of_client'];
+    }
+    if (!empty($filters['key_of_worker'])) {
+        $query .= " AND rf.key_of_worker = :key_of_worker";
+        $params[':key_of_worker'] = $filters['key_of_worker'];
+    }
+    if (!empty($filters['date_from'])) {
+        $query .= " AND cr.date_time_of_request >= :date_from";
+        $params[':date_from'] = $filters['date_from'];
+    }
+    if (!empty($filters['date_to'])) {
+        $query .= " AND cr.date_time_of_request <= :date_to";
+        $params[':date_to'] = $filters['date_to'];
+    }
+
+    $stmt = $pdo->prepare($query);
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 $filters = [
     'key_of_status' => $_GET['key_of_status'] ?? '',
