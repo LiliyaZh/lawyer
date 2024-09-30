@@ -1,3 +1,33 @@
+<?php
+require_once('db.php');
+
+// Проверка авторизации
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 'employee') {
+    header('Location: login');
+    exit;
+}
+
+// Параметры пагинации
+$messages_per_page = isset($_GET['limit']) ? (int) $_GET['limit'] : 15; // Число сообщений на странице (по умолчанию 15)
+$page = isset($_GET['page']) ? (int) $_GET['page'] : 1; // Текущая страница
+$offset = ($page - 1) * $messages_per_page;
+
+// Общее количество сообщений
+$total_messages_query = $pdo->query("SELECT COUNT(*) FROM feedbacks_of_clients");
+$total_messages = $total_messages_query->fetchColumn();
+
+// Вычисление общего количества страниц
+$total_pages = ceil($total_messages / $messages_per_page);
+
+// Запрос на выборку сообщений с учетом пагинации
+$sql = "SELECT * FROM feedbacks_of_clients AS a INNER JOIN clients_of_company AS b ORDER BY a.date_time_of_feedback DESC LIMIT :limit OFFSET :offset";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':limit', $messages_per_page, PDO::PARAM_INT);
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
+$feedbacks = $stmt->fetchAll();
+?>
+
 <h2 class="text-center mb-3">Сообщения из формы обратной связи</h2>
 
 <table class="table table-bordered">
