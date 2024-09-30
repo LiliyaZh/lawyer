@@ -1,3 +1,74 @@
+<?php
+require_once('db.php');
+
+// Проверка авторизации
+if (!isset($_SESSION['user_id']) || ($_SESSION['user_type'] != 'client' && !isset($_SESSION['empl_type']) && $_SESSION['empl_type'] != 2)) {
+    header('Location: login');
+    exit;
+}
+
+$errors = [];
+
+// Обработка формы
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $text_of_message = $_POST['text_of_message'];
+
+    // Валидация данных
+    if (empty($text_of_message))
+        $errors[] = 'Опишите проблемную ситуацию.';
+
+    // Если ошибок нет, сохранение данных
+    if (empty($errors)) {
+        try {
+            $pdo->beginTransaction();
+
+            // Добавление заявки
+            if(isset($_SESSION['empl_type']) && $_SESSION['empl_type'] == 2) // Делопроизводитель
+                $key_of_client = $_POST['key_of_client'];
+            else
+                $key_of_client = $_SESSION['user_id'];
+
+            $stmt = $pdo->prepare("INSERT INTO requests_of_clients (key_of_client) VALUES (?)");
+            $stmt->execute([$key_of_client]);
+            $key_of_request = $pdo->lastInsertId();
+            
+
+            // Добавление сообщения
+            $stmt = $pdo->prepare("INSERT INTO messages_in_requests (text_of_message, key_of_client, key_of_request) VALUES (?, ?, ?)");
+            $stmt->execute([$text_of_message, $key_of_client, $key_of_request]);
+
+            // Добавление записи в историю заявок
+            $stmt = $pdo->prepare("INSERT INTO history_of_requests (key_of_status, key_of_request) VALUES (1, ?)");
+            $stmt->execute([$key_of_request]);
+
+            // Обработка загруженных файлов
+            if (!empty($_FILES['files']['name'][0])) {
+                $uploadDir = 'uploads/';
+                foreach ($_FILES['files']['tmp_name'] as $key => $tmpName) {
+                    $fileName = basename($_FILES['files']['name'][$key]);
+                    $fileSize = $_FILES['files']['size'][$key];
+                    $fileServerName = uniqid() . '-' . $fileName;
+                    $filePath = $uploadDir . $fileServerName;
+
+                    if (move_uploaded_file($tmpName, $filePath)) {
+                        $stmt = $pdo->prepare("INSERT INTO files_of_requests (name_of_file, server_name_of_file, size_of_file, key_of_client, key_of_request) VALUES (?, ?, ?, ?, ?)");
+                        $stmt->execute([$fileName, $fileServerName, $fileSize, $_SESSION['user_id'], $key_of_request]);
+                    }
+                }
+            }
+
+            $pdo->commit();
+
+            echo '<div class="alert alert-success text-center">Заявка на оказание бесплатной юридической помощи успешно создана.</div>';
+            exit;
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            $errors[] = '<div class="alert alert-danger text-center">Ошибка при создании заявки: ' . $e->getMessage() . '</div>';
+        }
+    }
+}
+?>
+
 <h2 class="text-center">Добавить заявку</h2>
 <?php if (!empty($errors)): ?>
     <div class="alert alert-danger">
