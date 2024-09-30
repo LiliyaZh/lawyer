@@ -1,3 +1,30 @@
+<?php
+require_once ('db.php');
+
+// Получение ID заявки из параметров URL
+$reqId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$key_of_request = $reqId;
+
+// Загрузка текущих данных заявки
+$sql = "SELECT cr.*, (SELECT text_of_message FROM messages_in_requests WHERE key_of_request = ? ORDER BY date_time_of_message ASC LIMIT 1) AS problem FROM requests_of_clients AS cr WHERE key_of_request = ?";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$reqId, $reqId]);
+$request = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Загрузка всех статусов
+$sql = "SELECT * FROM statuses_of_requests";
+$statuses = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+// Загрузка всех типов заявок
+$sql = "SELECT * FROM types_of_requests";
+$types = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+// Загрузка всех юристконсультов
+$sql = "SELECT * FROM workers_in_company WHERE type_of_worker = 3";
+$workers_in_company = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+?>
+
 <h2 class="text-center mb-4">Управление заявкой на оказание бесплатной юридической помощи</h2>
 <form action="" method="POST">
     <div class="mb-3">
