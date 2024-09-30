@@ -97,6 +97,17 @@ $stmt = $pdo->prepare('
 ');
 $stmt->execute(['key_of_request' => $reqId]);
 $messages = $stmt->fetchAll();
+
+$stmt = $pdo->prepare('
+    SELECT f.name_of_file, f.server_name_of_file, f.date_time_upload_of_file, c.name_of_client, c.surname_of_client, e.name_of_worker, e.surname_of_worker
+    FROM files_of_requests f
+    LEFT JOIN clients_of_company c ON f.key_of_client = c.key_of_client
+    LEFT JOIN workers_in_company e ON f.key_of_worker = e.key_of_worker
+    WHERE f.key_of_request = :key_of_request
+    ORDER BY f.date_time_upload_of_file ASC
+');
+$stmt->execute(['key_of_request' => $reqId]);
+$files = $stmt->fetchAll();
 ?>
 
 <h2 class="text-center mb-4">Управление заявкой на оказание бесплатной юридической помощи</h2>
