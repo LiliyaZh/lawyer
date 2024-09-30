@@ -15,3 +15,44 @@
         <?php endforeach; ?>
     </tbody>
 </table>
+
+<h4 class="text-start mt-5 mb-4">Чат взаимодействия между юридическим бюро и гражданином:</h4>
+<style>
+    .client-message {
+        background-color: #d1ecf1;
+        padding: 10px;
+        border-radius: 10px;
+        margin: 10px 0;
+    }
+
+    .employee-message {
+        background-color: #f8d7da;
+        padding: 10px;
+        border-radius: 10px;
+        margin: 10px 0;
+    }
+
+    .file-message {
+        padding: 10px;
+        border-radius: 10px;
+        margin: 10px 0;
+        background-color: #e2e3e5;
+    }
+</style>
+<div class="chat-box">
+    <?php foreach ($messages as $message): ?>
+        <div class="<?php echo $message['name_of_client'] ? 'client-message' : 'employee-message'; ?>">
+            <strong><?php echo htmlspecialchars($message['name_of_client'] ?? $message['name_of_worker']) . ' ' . htmlspecialchars($message['surname_of_client'] ?? $message['surname_of_worker']); ?>:</strong>
+            <p><?php echo htmlspecialchars($message['text_of_message']); ?></p>
+            <small><?php echo htmlspecialchars($message['date_time_of_message']); ?></small>
+        </div>
+    <?php endforeach; ?>
+    <?php foreach ($files as $file): ?>
+        <div class="file-message">
+            <strong><?php echo htmlspecialchars($file['name_of_client'] ?? $file['name_of_worker']) . ' ' . htmlspecialchars($file['surname_of_client'] ?? $file['surname_of_worker']); ?>:</strong>
+            <p>Файл: <a href="uploads/<?php echo htmlspecialchars($file['server_name_of_file']); ?>"
+                    download><?php echo htmlspecialchars($file['name_of_file']); ?></a></p>
+            <small><?php echo htmlspecialchars($file['date_time_upload_of_file']); ?></small>
+        </div>
+    <?php endforeach; ?>
+</div>
