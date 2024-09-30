@@ -86,7 +86,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sendchat'])) {
     exit();
 }
 
-
+// Запрос для получения сообщений и файлов
+$stmt = $pdo->prepare('
+    SELECT m.text_of_message, m.date_time_of_message, c.name_of_client, c.surname_of_client, e.name_of_worker, e.surname_of_worker
+    FROM messages_in_requests m
+    LEFT JOIN clients_of_company c ON m.key_of_client = c.key_of_client
+    LEFT JOIN workers_in_company e ON m.key_of_worker = e.key_of_worker
+    WHERE m.key_of_request = :key_of_request
+    ORDER BY m.date_time_of_message ASC
+');
+$stmt->execute(['key_of_request' => $reqId]);
+$messages = $stmt->fetchAll();
 ?>
 
 <h2 class="text-center mb-4">Управление заявкой на оказание бесплатной юридической помощи</h2>
