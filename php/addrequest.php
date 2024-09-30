@@ -31,5 +31,7 @@
         <label for="files" class="form-label">Приложить файлы</label>
         <input type="file" class="form-control" id="files" name="files[]" multiple>
     </div>
-    <button type="submit" class="btn btn-primary">Создать заявку</button>
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">Создать заявку</button>
+    </div>
 </form>
