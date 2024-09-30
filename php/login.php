@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<h2>Вход в систему</h2>
+<h2 class="text-center">Авторизация в системе</h2>
 <?php if (!empty($errors)): ?>
     <div class="alert alert-danger">
         <ul>
@@ -74,5 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label class="form-check-label" for="employee">Сотрудник юридического бюро</label>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary">Войти</button>
+    <div class="text-center">
+        <button type="submit" class="btn btn-success">Войти в личный кабинет</button>
+    </div>
 </form>
