@@ -28,3 +28,31 @@
         <?php endif; ?>
     </tbody>
 </table>
+
+<!-- Пагинация -->
+<nav>
+    <ul class="pagination">
+        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+            <li class="page-item <?php if ($i == $page)
+                echo 'active'; ?>">
+                <a class="page-link" href="readfeedbacks?page=<?php echo $i; ?>&limit=<?php echo $messages_per_page; ?>">
+                    <?php echo $i; ?>
+                </a>
+            </li>
+        <?php endfor; ?>
+    </ul>
+</nav>
+
+<!-- Форма для изменения количества сообщений на странице -->
+<form action="" method="GET" class="mt-3">
+    <div class="row">
+        <div class="col-md-4">
+            <label for="limit" class="form-label">Сообщений на странице:</label>
+            <input type="number" name="limit" id="limit" value="<?php echo $messages_per_page; ?>" class="form-control"
+                min="1" max="100">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Применить</button>
+        </div>
+    </div>
+</form>
