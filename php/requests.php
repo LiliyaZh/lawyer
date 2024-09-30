@@ -71,3 +71,29 @@
         </div>
     </div>
 </form>
+<table class="table table-bordered" id="requests">
+    <thead>
+        <tr>
+            <th>Дата и время</th>
+            <th>Тип заявки</th>
+            <th>Статус заявки</th>
+            <th>Гражданин</th>
+            <th>Ответственный сотрудник</th>
+            <th>Действие</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($requests as $request): ?>
+            <tr>
+                <td><?= isset($request['date_time_of_request']) ? htmlspecialchars($request['date_time_of_request']) : '' ?></td>
+                <td><?= isset($request['name_of_type']) ? htmlspecialchars($request['name_of_type']) : '' ?></td>
+                <td><?= isset($request['name_of_status']) ? htmlspecialchars($request['name_of_status']) : '' ?></td>
+                <td><?= (isset($request['name_of_client']) ? htmlspecialchars($request['name_of_client']) : '') . ' ' . (isset($request['surname_of_client']) ? htmlspecialchars($request['surname_of_client']) : '') . ' [' . (isset($request['telephone_of_client']) ? htmlspecialchars($request['telephone_of_client']) : '') . ']' ?></td>
+                <td><?= (isset($request['name_of_worker']) ? htmlspecialchars($request['name_of_worker']) : '') . ' ' . (isset($request['surname_of_worker']) ? htmlspecialchars($request['surname_of_worker']) : '') . (isset($request['telephone_of_worker']) ? ' [' . htmlspecialchars($request['telephone_of_worker']) . ']' : '')  ?></td>
+                <td>
+                    <a href="request?id=<?= $request['key_of_request'] ?>" class="btn btn-sm btn-primary">Просмотреть</a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
