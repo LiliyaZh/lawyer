@@ -56,3 +56,15 @@
         </div>
     <?php endforeach; ?>
 </div>
+<form action="request?id=<?php echo $key_of_request; ?>" method="post" enctype="multipart/form-data"
+    class="mt-3">
+    <div class="mb-3">
+        <label for="message" class="form-label">Новое сообщение</label>
+        <textarea name="message" id="message" rows="3" class="form-control"></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="file" class="form-label">Приложить файл</label>
+        <input type="file" name="file" id="file" class="form-control">
+    </div>
+    <button type="submit" name="sendchat" class="btn btn-primary">Отправить</button>
+</form>
